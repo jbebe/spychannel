@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { LoginService } from '../../../service/login/login.service';
 import { LoginInfo } from '../../../entity/login';
 
@@ -7,23 +7,13 @@ import { LoginInfo } from '../../../entity/login';
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.css']
 })
-export class LoginPageComponent implements OnInit, AfterViewInit {
-
-  @ViewChild('usernameInput') private usernameInput: ElementRef;
+export class LoginPageComponent {
 
   public loginError = '';
 
   constructor(
     private loginService: LoginService
   ) {
-  }
-
-  ngOnInit(): void {
-    (<HTMLInputElement>this.usernameInput.nativeElement).focus();
-  }
-
-  ngAfterViewInit(): void {
-
   }
 
   async tryEnter(usernameInputRef: HTMLInputElement) {

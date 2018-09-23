@@ -4,6 +4,8 @@ import { AppComponent } from './app.component';
 import { AppRouting } from './app.routing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GlobalService } from './service/global/global.service';
+import { WebStorageModule } from 'ngx-store';
+import { ApiService } from './service/api/api';
 
 @NgModule({
   declarations: [
@@ -12,10 +14,12 @@ import { GlobalService } from './service/global/global.service';
   imports: [
     BrowserModule,
     AppRouting,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    WebStorageModule
   ],
   providers: [
-    GlobalService
+    GlobalService,
+    ApiService
   ],
   bootstrap: [AppComponent]
 })

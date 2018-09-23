@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ChatUserInfo } from '../../entity/chat';
 import { WebSocketService } from '../websocket/websocket.service';
+import { ApiService } from '../api/api';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,10 @@ export class UserService {
   private wsService: WebSocketService;
 
   // calls our wsService connect method
-  constructor(private ws: WebSocketService) {
+  constructor(
+    private api: ApiService,
+    private ws: WebSocketService
+  ) {
     this.wsService = ws;
     this.wsService.connect('', {
       onOpen: () => {
@@ -34,7 +38,8 @@ export class UserService {
     this.wsService.send(msg);
   }
 
-  getActiveUsers(): ChatUserInfo[] {
-    return [new ChatUserInfo('bebe', true), new ChatUserInfo('sasa', false)];
+  async getActiveUsers(): Promise<ChatUserInfo[]> {
+    const activeUsers = await this.api.get<ChatUserInfo[]>(['user']);
+    return activeUsers;
   }
 }

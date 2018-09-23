@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  chatApiEndpoint: 'https://localhost:44370/api',
+  signalServerEndpoint: 'ws://localhost:51251/ws',
 };
 
 /*

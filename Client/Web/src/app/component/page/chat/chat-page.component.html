@@ -1,12 +1,10 @@
-<div class="row">
-  <div class="col-3">
-    <ul>
-      <li *ngFor="let activeUser of activeUsers">
-        <a href="(void)0;"> {{ activeUser.username }} </a>
-      </li>
-    </ul>
-  </div>
-  <div class="col-9">
-    message box
+<div class="container-fluid h-100">
+  <div class="row h-100 py-3">
+    <aside class="col-sm-2">
+      <shared-chat-sidebar></shared-chat-sidebar>
+    </aside>
+    <main class="col">
+      <shared-chat-message-box></shared-chat-message-box>
+    </main>
   </div>
 </div>

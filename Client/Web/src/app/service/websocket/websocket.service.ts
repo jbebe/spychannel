@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { WebSocketEventHandlers } from '../../entity/websocket';
-
-const SERVER_URL = 'ws://localhost:51251/ws';
+import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class WebSocketService {
@@ -13,7 +12,7 @@ export class WebSocketService {
   }
 
   public connect(connectionString: string, handlers: WebSocketEventHandlers) {
-    connectionString = SERVER_URL;
+    connectionString = environment.signalServerEndpoint;
     if (!!this.socket) {
       return;
     }
