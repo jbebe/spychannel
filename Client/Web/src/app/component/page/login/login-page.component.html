@@ -1,3 +1,3 @@
-<p>
-  login-page works!
-</p>
+<span>{{ loginError }}</span>
+<input #usernameInput placeholder="Username" tabindex="1"
+       (keydown.enter)="tryEnter(usernameInput)">
