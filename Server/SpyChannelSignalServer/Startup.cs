@@ -1,5 +1,4 @@
-﻿#define NoOptions //UseOptions // or NoOptions
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
@@ -12,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace EchoApp
+namespace SpyChannel.SignalServer
 {
   public class Startup
   {
@@ -32,23 +31,8 @@ namespace EchoApp
       {
         app.UseDeveloperExceptionPage();
       }
-
-#if NoOptions
-      #region UseWebSockets
       app.UseWebSockets();
-      #endregion
-#endif
-#if UseOptions
-      #region UseWebSocketsOptions
-      var webSocketOptions = new WebSocketOptions()
-      {
-          KeepAliveInterval = TimeSpan.FromSeconds(120),
-          ReceiveBufferSize = 4 * 1024
-      };
-      app.UseWebSockets(webSocketOptions);
-      #endregion
-#endif
-      #region AcceptWebSocket
+
       app.Use(async (context, next) =>
       {
         if (context.Request.Path.Value.Contains("/ws"))
@@ -69,22 +53,29 @@ namespace EchoApp
         }
 
       });
-      #endregion
-      app.UseFileServer();
     }
+
     #region Echo
+
     private async Task Echo(HttpContext context, WebSocket webSocket)
     {
       var buffer = new byte[1024 * 4];
+      
+      // wait for incoming ws connection to build up
       WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+
+      // wait while the connection is not closed
       while (!result.CloseStatus.HasValue)
       {
+        // incoming message? respond with same data!
         await webSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
 
+        // wait for next message
         result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
       }
       await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
     }
+    
     #endregion
   }
 }

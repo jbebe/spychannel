@@ -14,4 +14,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SpyChannelSignalService\SpyChannelSignalService.csproj" />
+  </ItemGroup>
+
 </Project>

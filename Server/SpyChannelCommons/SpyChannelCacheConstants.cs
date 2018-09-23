@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SpyChannelSignalService
+namespace SpyChannel.Commons
 {
-  class CacheConstants
+  public class SpyChannelCacheConstants
   {
     public const string UserHashKey = "users";
   }

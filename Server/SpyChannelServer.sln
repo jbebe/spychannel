@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpyChannelApiServer", "Signal\SpyChannelSignalServer\SpyChannelApiServer.csproj", "{D96DCEBD-CA44-4F79-98C2-9956DAEFDEEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpyChannelApiServer", "SpyChannelApiServer\SpyChannelApiServer.csproj", "{D96DCEBD-CA44-4F79-98C2-9956DAEFDEEF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpyChannelApiService", "Signal\SpyChannelSignalService\SpyChannelApiService.csproj", "{54C0DA6B-6B7A-49B3-8751-1417FD9BCD4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpyChannelSignalServer", "SpyChannelSignalServer\SpyChannelSignalServer.csproj", "{743E0626-79E0-455E-BAAD-33795BC4B215}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpyChannelSignalServer", "WebSocket\SpyChannelWebSocketServer\SpyChannelSignalServer.csproj", "{743E0626-79E0-455E-BAAD-33795BC4B215}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpyChannelApiService", "SpyChannelApiService\SpyChannelApiService.csproj", "{B9343E41-25AF-4337-AAAD-CD2DF21958B0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpyChannelSignalService", "SpyChannelSignalService\SpyChannelSignalService.csproj", "{F1FBF73F-687D-4435-A4CD-836000818542}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpyChannelCommons", "SpyChannelCommons\SpyChannelCommons.csproj", "{7D3B1094-E850-4142-A44D-C579B7E96F5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +23,22 @@ Global
 		{D96DCEBD-CA44-4F79-98C2-9956DAEFDEEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D96DCEBD-CA44-4F79-98C2-9956DAEFDEEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D96DCEBD-CA44-4F79-98C2-9956DAEFDEEF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{54C0DA6B-6B7A-49B3-8751-1417FD9BCD4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{54C0DA6B-6B7A-49B3-8751-1417FD9BCD4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{54C0DA6B-6B7A-49B3-8751-1417FD9BCD4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{54C0DA6B-6B7A-49B3-8751-1417FD9BCD4C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{743E0626-79E0-455E-BAAD-33795BC4B215}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{743E0626-79E0-455E-BAAD-33795BC4B215}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{743E0626-79E0-455E-BAAD-33795BC4B215}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{743E0626-79E0-455E-BAAD-33795BC4B215}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9343E41-25AF-4337-AAAD-CD2DF21958B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9343E41-25AF-4337-AAAD-CD2DF21958B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9343E41-25AF-4337-AAAD-CD2DF21958B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9343E41-25AF-4337-AAAD-CD2DF21958B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1FBF73F-687D-4435-A4CD-836000818542}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1FBF73F-687D-4435-A4CD-836000818542}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1FBF73F-687D-4435-A4CD-836000818542}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1FBF73F-687D-4435-A4CD-836000818542}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D3B1094-E850-4142-A44D-C579B7E96F5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D3B1094-E850-4142-A44D-C579B7E96F5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D3B1094-E850-4142-A44D-C579B7E96F5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D3B1094-E850-4142-A44D-C579B7E96F5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,9 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SpyChannelSignalService;
+using SpyChannel.ApiService;
 
-namespace SpyChannelSignalServer
+namespace SpyChannel.ApiServer
 {
   public class Startup
   {
@@ -26,7 +26,7 @@ namespace SpyChannelSignalServer
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddSingleton<SignalService>();
+      services.AddSingleton<SpyChannelChatApiService>();
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
     }
 
@@ -41,7 +41,6 @@ namespace SpyChannelSignalServer
       {
         app.UseHsts();
       }
-
       app.UseHttpsRedirection();
       app.UseMvc();
     }
