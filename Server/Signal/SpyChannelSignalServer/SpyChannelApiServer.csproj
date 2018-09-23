@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SpyChannelSignalService\SpyChannelSignalService.csproj" />
+    <ProjectReference Include="..\SpyChannelSignalService\SpyChannelApiService.csproj" />
   </ItemGroup>
 
 </Project>
