@@ -31,28 +31,16 @@ namespace SpyChannel.SignalServer
       {
         app.UseDeveloperExceptionPage();
       }
-      app.UseWebSockets();
 
-      app.Use(async (context, next) =>
+      app.UseMvc(routes =>
       {
-        if (context.Request.Path.Value.Contains("/ws"))
-        {
-          if (context.WebSockets.IsWebSocketRequest)
-          {
-            WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-            await Echo(context, webSocket);
-          }
-          else
-          {
-            context.Response.StatusCode = 400;
-          }
-        }
-        else
-        {
-          await next();
-        }
-
+        routes.MapRoute(
+            name: "default",
+            template: "{controller=Home}/{action=Index}/{id?}");
       });
+
+      app.UseWebSockets();
+      app.UseSignalR();
     }
 
     #region Echo
