@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ChatUserInfo } from '../../../entity/chat';
 import { UserService } from '../../../service/user/user.service';
 import { GlobalService } from '../../../service/global/global.service';
+import { SignalingService } from '../../../service/signaling/signaling.service';
 
 @Component({
   selector: 'shared-chat-sidebar',
@@ -15,10 +16,9 @@ export class ChatSidebarComponent {
 
   constructor(
     private userService: UserService,
-    private globalService: GlobalService
+    private globalService: GlobalService,
+    private signalingService: SignalingService
   ) {
-    this.masterUser = new ChatUserInfo(globalService.loginInfo.name, true);
-    this.initUsers();
   }
 
   private async initUsers() {

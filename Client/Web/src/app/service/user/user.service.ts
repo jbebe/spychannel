@@ -15,7 +15,7 @@ export class UserService {
     private api: ApiService,
     private ws: WebSocketService
   ) {
-    this.wsService = ws;
+    /*this.wsService = ws;
     this.wsService.connect('', {
       onOpen: () => {
         console.log('opened!');
@@ -30,7 +30,7 @@ export class UserService {
       onError: (data) => {
         console.log('new message: ' + data);
       }
-    });
+    });*/
   }
 
   send(msg: string) {
