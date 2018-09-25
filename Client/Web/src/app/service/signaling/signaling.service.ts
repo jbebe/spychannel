@@ -9,12 +9,12 @@ export class SignalingService {
   constructor() {
     console.log('signalR connection started...');
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:44325/chat')
+      .withUrl('http://localhost:60900/chat')
       .build();
-    connection.on('send', data => {
+    connection.on('broadcastMessage', data => {
       console.log(data);
     });
     connection.start()
-      .then(() => connection.invoke('SendMessage', 'Hello'));
+      .then(() => connection.invoke('Send', 'Angular', 'Hello'));
   }
 }
