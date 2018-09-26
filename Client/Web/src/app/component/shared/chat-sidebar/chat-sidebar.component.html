@@ -1,14 +1,14 @@
 <div class="card mb-3 p-2">
   <p>
-    <!--Name: <b>{{ masterUser.username }}</b><br/>-->
+    Name: <b>{{ masterUser.username }}</b><br/>
     <a routerLink="/login" routerLinkActive="active">Logout</a>
   </p>
   <div>
     Active users:
     <ul class="nav flex-sm-column justify-content-center">
-      <!--<a href="#" class="nav-link" *ngFor="let activeUser of activeUsers">
+      <a href="#" class="nav-link" *ngFor="let activeUser of activeUsers">
         {{ activeUser.username }}
-      </a>-->
+      </a>
     </ul>
   </div>
 </div>

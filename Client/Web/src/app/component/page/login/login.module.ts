@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { LoginPageComponent } from './login-page.component';
 import { LoginRoutingModule } from './login.routing';
+import { LoginService } from '../../../service/login/login.service';
 
 @NgModule({
   imports: [
@@ -8,6 +9,9 @@ import { LoginRoutingModule } from './login.routing';
   ],
   declarations: [
     LoginPageComponent
+  ],
+  providers: [
+    LoginService
   ]
 })
 export class LoginModule {

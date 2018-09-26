@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   chatApiEndpoint: 'https://localhost:44370/api',
-  signalServerEndpoint: 'ws://localhost:51251/ws',
+  signalServerEndpoint: 'http://localhost:60900/chat',
 };
 
 /*

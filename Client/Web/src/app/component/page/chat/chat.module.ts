@@ -2,11 +2,8 @@ import { NgModule } from '@angular/core';
 import { ChatPageComponent } from './chat-page.component';
 import { ChatRoutingModule } from './chat.routing';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../../../service/user/user.service';
-import { WebSocketService } from '../../../service/websocket/websocket.service';
 import { ChatSidebarComponent } from '../../shared/chat-sidebar/chat-sidebar.component';
 import { ChatMessageBoxComponent } from '../../shared/chat-message-box/chat-message-box.component';
-import { SignalingService } from '../../../service/signaling/signaling.service';
 
 @NgModule({
   imports: [
@@ -18,11 +15,7 @@ import { SignalingService } from '../../../service/signaling/signaling.service';
     ChatSidebarComponent,
     ChatMessageBoxComponent
   ],
-  providers: [
-    WebSocketService,
-    UserService,
-    SignalingService
-  ]
+  providers: []
 })
 export class ChatModule {
 }

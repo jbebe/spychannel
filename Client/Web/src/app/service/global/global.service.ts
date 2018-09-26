@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LoginInfo } from '../../entity/login';
+import { LoginInfo } from '../../model/login';
 import { LocalStorage } from 'ngx-store';
 
 @Injectable({
@@ -7,7 +7,7 @@ import { LocalStorage } from 'ngx-store';
 })
 export class GlobalService {
 
-  @LocalStorage() public loginInfo: LoginInfo;
+  public message: string;
 
   constructor() { }
 }

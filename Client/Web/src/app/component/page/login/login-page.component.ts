@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { LoginService } from '../../../service/login/login.service';
-import { LoginInfo } from '../../../entity/login';
+import { LoginInfo } from '../../../model/login';
 
 @Component({
   selector: 'app-login-page',

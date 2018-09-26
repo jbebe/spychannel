@@ -1,21 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoginFailure, LoginInfo } from '../../entity/login';
-import { GlobalService } from '../global/global.service';
+import { LoginFailure, LoginInfo } from '../../model/login';
+import { SessionService } from '../session/session.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class LoginService {
 
   constructor(
     private router: Router,
-    private globalService: GlobalService
+    private sessionService: SessionService
   ) { }
 
   async login(loginInfo: LoginInfo): Promise<LoginFailure | null> {
     if (!!loginInfo.name) {
-      this.globalService.loginInfo = loginInfo;
+      await this.sessionService.create(loginInfo);
       await this.router.navigate(['chat']);
       return null;
     } else {

@@ -6,38 +6,28 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GlobalService } from './service/global/global.service';
 import { WebStorageModule } from 'ngx-store';
 import { ApiService } from './service/api/api';
-import { SignalRModule, SignalRConfiguration } from 'ng2-signalr';
 import { HttpClientModule } from '@angular/common/http';
-
-export function createConfig(): SignalRConfiguration {
-  const c = new SignalRConfiguration();
-  c.hubName = 'Ng2SignalRHub';
-  c.qs = { user: 'donald' };
-  c.url = 'http://ng2-signalr-backend.azurewebsites.net/';
-  c.logging = true;
-
-  // >= v5.0.0
-  c.executeEventsInZone = true; // optional, default is true
-  c.executeErrorsInZone = false; // optional, default is false
-  c.executeStatusChangeInZone = true; // optional, default is true
-  return c;
-}
+import { SessionService } from './service/session/session.service';
+import { MessageComponent } from './component/page/message/message.component';
+import { SignalingService } from './service/signaling/signaling.service';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    MessageComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     AppRouting,
     BrowserAnimationsModule,
-    WebStorageModule,
-    SignalRModule.forRoot(createConfig)
+    WebStorageModule
   ],
   providers: [
     GlobalService,
-    ApiService
+    ApiService,
+    SignalingService,
+    SessionService
   ],
   bootstrap: [AppComponent]
 })
