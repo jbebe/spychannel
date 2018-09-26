@@ -35,7 +35,7 @@ namespace SpyChannel.SignalServer
 
       app.UseSignalR(routes =>
       {
-        routes.MapHub<ChatHub>("/chat");
+        routes.MapHub<SignalServerHub>("/chat");
       });
     }
   }

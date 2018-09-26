@@ -6,6 +6,6 @@ namespace SpyChannel.Commons
 {
   public class SpyChannelCacheConstants
   {
-    public const string UserHashKey = "users";
+    public const string UserGroupKey = "users";
   }
 }

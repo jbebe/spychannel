@@ -23,13 +23,13 @@ namespace SpyChannel.ApiService
 
     public async Task<IEnumerable<string>> GetUsersAsync()
     {
-      var entries = await Cache.HashGetAllAsync(SpyChannelCacheConstants.UserHashKey);
+      var entries = await Cache.HashGetAllAsync(SpyChannelCacheConstants.UserGroupKey);
       return entries.Select(entry => entry.ToString());
     }
 
-    /*public async Task AddUserAsync(SpyChannelUser user)
+    public async Task AddUserAsync(SpyChannelUser user)
     {
-      await Cache.HashSetAsync(SpyChannelCacheConstants.UserHashKey, new HashEntry[] { new HashEntry(user.Username, "") });
-    }*/
+      await Cache.HashSetAsync(SpyChannelCacheConstants.UserGroupKey, new HashEntry[] { new HashEntry(user.Username, "") });
+    }
   }
 }
