@@ -6,7 +6,7 @@
   <div>
     Active users:
     <ul class="nav flex-sm-column justify-content-center">
-      <a href="#" class="nav-link" *ngFor="let activeUser of activeUsers">
+      <a href="#" (click)="selectUser(activeUser.username)" class="nav-link" *ngFor="let activeUser of activeUsers">
         {{ activeUser.username }}
       </a>
     </ul>

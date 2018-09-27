@@ -17,6 +17,6 @@ export class SessionService {
 
   async create(loginInfo: LoginInfo) {
     this.currentUser = new ChatUserInfo(loginInfo.name, true);
-    await this.signalingService.RegisterNewUserAsync(loginInfo.name);
+    await this.signalingService.RegisterAsync(loginInfo.name);
   }
 }

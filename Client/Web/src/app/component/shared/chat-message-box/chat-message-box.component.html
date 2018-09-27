@@ -1,3 +1,15 @@
 <div class="card mb-3 p-2">
-  message box
+
+  <div class="">
+    <p *ngFor="let message of messages">
+      <b>{{ message.from }}</b>: {{ message.text }}
+    </p>
+  </div>
+
+  <div class="form-group">
+    <label for="chat-message-box-textarea">Write something!</label>
+    <textarea class="form-control" id="chat-message-box-textarea" rows="3"
+              (keydown.enter)="sendMessage($event)"></textarea>
+  </div>
+
 </div>

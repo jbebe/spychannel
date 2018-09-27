@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
 import { environment } from '../../../environments/environment';
 import { Assert } from '../../utils/assert';
+import { EventHandlerType } from '../../utils/signaling';
 
 function RemoteCall() {
   return (methodObj, methodName: string, descriptor: PropertyDescriptor) => {
@@ -20,8 +21,6 @@ function RemoteCall() {
     };
   };
 }
-
-type EventHandlerType = (...args: any[]) => void;
 
 interface IEventHandlerList {
   [eventName: string]: EventHandlerType[];
@@ -111,13 +110,11 @@ export class SignalingService {
   public OnUserConnected(username: string) {
   }
 
-  @RemoteCall()
-  public async RegisterNewUserAsync(username: string) {
+  public OnUserDisconnected(username: string) {
   }
 
   @RemoteCall()
-  public async GetAllUserAsync(): Promise<string[]> {
-    return null;
+  public async RegisterAsync(username: string) {
   }
 
 }
