@@ -4,9 +4,9 @@ using System.Text;
 
 namespace SpyChannel.Commons
 {
-  public class SpyChannelUser
+  public class User
   {
-    public SpyChannelUser(string username)
+    public User(string username)
     {
       Username = username;
     }

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpyChannelCacheService\SpyChannel.CacheService.csproj" />
+    <ProjectReference Include="..\SpyChannelCommons\SpyChannel.Commons.csproj" />
+  </ItemGroup>
+
+</Project>

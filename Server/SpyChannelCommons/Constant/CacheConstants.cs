@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SpyChannel.Commons
 {
-  public class SpyChannelCacheConstants
+  public static class CacheConstants
   {
     public const string UserGroupKey = "users";
   }

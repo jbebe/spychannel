@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using SpyChannel.CacheService;
 using SpyChannel.Commons;
 using StackExchange.Redis;
 using System;
@@ -9,41 +10,49 @@ using System.Threading.Tasks;
 
 namespace SpyChannel.SignalServer.Hubs
 {
-  public class SignalServerHub: Hub
+  public class SignalServerHub : Hub
   {
-    private ConnectionMultiplexer CacheConnection { get; }
-    private IDatabase Cache { get; set; }
+    public ChatCacheService CacheService { get; }
 
-    public SignalServerHub(): base()
+    public SignalServerHub(ChatCacheService cacheService)
     {
-      CacheConnection = ConnectionMultiplexer.Connect("localhost");
-      Cache = CacheConnection.GetDatabase();
+      CacheService = cacheService;
     }
 
-    public async void RegisterNewUser(string username)
+    // we don't use it yet
+    // public virtual Task OnConnectedAsync()
+
+    public async override Task OnDisconnectedAsync(Exception exception)
     {
       try
       {
-        await Clients.Others.SendAsync("UserConnected", username);
-        await Cache.HashSetAsync(
-        SpyChannelCacheConstants.UserGroupKey,
-        new[] { new HashEntry(username, username) });
-      } catch (Exception ex)
+        var userId = Context.Items["user_id"] as string;
+        var userName = await CacheService.GetAsync(userId);
+        await CacheService.RemoveAsync(userId);
+        await Clients.Others.SendAsync("UserDisconnected", userName);
+      }
+      catch (Exception ex)
       {
-        Debug.Write(ex.StackTrace);
+        Debug.WriteLine($"[error]: {ex.Message}");
       }
     }
 
-    public async Task<IEnumerable<string>> GetAllUser()
+    // hub methods
+
+    [HubMethodName("Register")]
+    public async void RegisterAsync(string username)
     {
-      var entries = await Cache.HashGetAllAsync(SpyChannelCacheConstants.UserGroupKey);
-      return entries.Select(entry => entry.Value.ToString());
+      try
+      {
+        var userId = Commons.Function.Generate.StringID();
+        Context.Items["user_id"] = userId;
+        await CacheService.AddAsync(userId, username);
+        await Clients.Others.SendAsync("UserConnected", username);
+      } catch (Exception ex)
+      {
+        Debug.WriteLine($"[error]: {ex.Message}");
+      }
     }
 
-    public void Send(string name, string message)
-    {
-      // Call the broadcastMessage method to update clients.
-      Clients.All.SendAsync("broadcastMessage", name, message);
-    }
   }
 }

@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SpyChannel.ApiService;
+using SpyChannel.CacheService;
 
 namespace SpyChannel.ApiServer
 {
@@ -26,7 +27,9 @@ namespace SpyChannel.ApiServer
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddSingleton<SpyChannelChatApiService>();
+      services.AddSingleton(new ChatCacheService(Commons.CacheConstants.UserGroupKey));
+      services.AddSingleton<ChatApiService>();
+      services.AddCors();
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
     }
 
@@ -41,6 +44,15 @@ namespace SpyChannel.ApiServer
       {
         app.UseHsts();
       }
+
+      app.UseCors(builder =>
+       builder
+       .AllowAnyOrigin()
+       .AllowAnyHeader()
+       .AllowAnyMethod()
+       .AllowCredentials()
+       .Build());
+
       app.UseHttpsRedirection();
       app.UseMvc();
     }

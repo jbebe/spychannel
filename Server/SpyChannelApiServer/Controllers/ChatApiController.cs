@@ -11,22 +11,22 @@ namespace SpyChannel.ApiServer.Controllers
 {
   [Route("api/user")]
   [ApiController]
-  public class SpyChannelChatApiController : ControllerBase
+  public class ChatApiController : ControllerBase
   {
-    private SpyChannelChatApiService Service { get; }
+    private ChatApiService ApiService { get; }
 
-    public SpyChannelChatApiController(SpyChannelChatApiService apiService)
+    public ChatApiController(ChatApiService apiService)
     {
-      Service = apiService;
+      ApiService = apiService;
     }
 
     /// <summary>
-    /// Get current users
+    /// Get online users
     /// </summary>
     [HttpGet]
     public async Task<IEnumerable<string>> GetAsync()
     {
-      return await Service.GetUsersAsync();
+      return await ApiService.GetUsersAsync();
     }
 
   }
