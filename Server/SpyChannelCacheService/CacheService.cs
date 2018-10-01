@@ -1,6 +1,5 @@
-﻿using SpyChannel.Commons;
+﻿using Newtonsoft.Json;
 using StackExchange.Redis;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,33 +19,35 @@ namespace SpyChannel.CacheService
       CacheGroupName = cacheGroupName;
     }
 
-    public async Task AddAsync(string name, string value)
+    public async Task AddAsync<T>(string id, T value)
     {
-      await AddAsync((name, value));
+      await AddAsync((id, value));
     }
 
-    public async Task AddAsync(params (string name, string value)[] nameValuePairs)
+    public async Task AddAsync<T>(params (string id, T value)[] nameValuePairs)
     {
       var hashEntries = nameValuePairs
-        .Select(pair => new HashEntry(pair.name, pair.value))
+        .Select(pair => (id: pair.id, value: JsonConvert.SerializeObject(pair.value)))
+        .Select(pair => new HashEntry(pair.id, pair.value))
         .ToArray();
       await Cache.HashSetAsync(CacheGroupName, hashEntries);
     }
 
-    public async Task<string> GetAsync(string name)
+    public async Task<T> GetAsync<T>(string id)
+      => JsonConvert.DeserializeObject<T>(await Cache.HashGetAsync(CacheGroupName, id));
+
+    public async Task RemoveAsync(string id)
     {
-      return await Cache.HashGetAsync(CacheGroupName, name);
+      await Cache.HashDeleteAsync(CacheGroupName, id);
     }
 
-    public async Task RemoveAsync(string name)
-    {
-      await Cache.HashDeleteAsync(CacheGroupName, name);
-    }
-
-    public async Task<IEnumerable<string>> GetAllAsync()
+    public async Task<IEnumerable<(string id, T value)>> GetAllAsync<T>()
     {
       var entries = await Cache.HashGetAllAsync(CacheGroupName);
-      return entries.Select(entry => entry.Value.ToString());
+      return entries.Select(entry => (
+        id: entry.Name.ToString(), 
+        value: JsonConvert.DeserializeObject<T>(entry.Value)
+        ));
     }
 
   }

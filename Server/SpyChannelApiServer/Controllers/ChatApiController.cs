@@ -24,7 +24,7 @@ namespace SpyChannel.ApiServer.Controllers
     /// Get online users
     /// </summary>
     [HttpGet]
-    public async Task<IEnumerable<string>> GetAsync()
+    public async Task<IEnumerable<UserEntity>> GetAsync()
     {
       return await ApiService.GetUsersAsync();
     }

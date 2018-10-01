@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using SpyChannel.CacheService;
 using SpyChannel.Commons;
 using StackExchange.Redis;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using static SpyChannel.SignalServer.Extension.HubCallerContextExtension;
 
 namespace SpyChannel.SignalServer.Hubs
 {
@@ -24,34 +26,22 @@ namespace SpyChannel.SignalServer.Hubs
 
     public async override Task OnDisconnectedAsync(Exception exception)
     {
-      try
-      {
-        var userId = Context.Items["user_id"] as string;
-        var userName = await CacheService.GetAsync(userId);
-        await CacheService.RemoveAsync(userId);
-        await Clients.Others.SendAsync("UserDisconnected", userName);
-      }
-      catch (Exception ex)
-      {
-        Debug.WriteLine($"[error]: {ex.Message}");
-      }
+      var userId = Context.GetChatUserId();
+      var userName = await CacheService.GetAsync<UserEntity>(userId);
+      await CacheService.RemoveAsync(userId);
+      await Clients.Others.SendAsync("UserDisconnected", userName);
     }
 
     // hub methods
 
     [HubMethodName("Register")]
-    public async void RegisterAsync(string username)
+    public async Task RegisterAsync(string userEntityJson)
     {
-      try
-      {
-        var userId = Commons.Function.Generate.StringID();
-        Context.Items["user_id"] = userId;
-        await CacheService.AddAsync(userId, username);
-        await Clients.Others.SendAsync("UserConnected", username);
-      } catch (Exception ex)
-      {
-        Debug.WriteLine($"[error]: {ex.Message}");
-      }
+      var user = JsonConvert.DeserializeObject<UserEntity>(userEntityJson);
+      var userId = Commons.Function.Generate.StringID();
+      Context.SetChatUserId(userId);
+      await CacheService.AddAsync(userId, user);
+      await Clients.Others.SendAsync("UserConnected", user);
     }
 
   }

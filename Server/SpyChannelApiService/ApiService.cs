@@ -18,9 +18,11 @@ namespace SpyChannel.ApiService
       CacheService = cacheService;
     }
 
-    public async Task<IEnumerable<string>> GetUsersAsync()
+    public async Task<IEnumerable<UserEntity>> GetUsersAsync()
     {
-      return await CacheService.GetAllAsync();
+      var allUserPairs = await CacheService.GetAllAsync<UserEntity>();
+      var allUsers = allUserPairs.Select(pair => pair.value);
+      return allUsers;
     }
 
   }
