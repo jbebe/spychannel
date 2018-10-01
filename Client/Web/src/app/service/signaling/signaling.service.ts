@@ -3,6 +3,7 @@ import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
 import { environment } from '../../../environments/environment';
 import { Assert } from '../../utils/assert';
 import { EventHandlerType } from '../../utils/signaling';
+import { UserEntity } from '../../model/chat';
 
 function RemoteCall() {
   return (methodObj, methodName: string, descriptor: PropertyDescriptor) => {
@@ -82,7 +83,6 @@ export class SignalingService {
   }
 
   constructor() {
-    console.log('INIT SIGNALR');
     this.InitSignalR();
   }
 
@@ -107,14 +107,14 @@ export class SignalingService {
     // connection.invoke('Send', 'Angular', 'Hello')
   }
 
-  public OnUserConnected(username: string) {
+  public OnUserConnected(user: UserEntity) {
   }
 
-  public OnUserDisconnected(username: string) {
+  public OnUserDisconnected(user: UserEntity) {
   }
 
   @RemoteCall()
-  public async RegisterAsync(username: string) {
+  public async RegisterAsync(user: UserEntity) {
   }
 
 }

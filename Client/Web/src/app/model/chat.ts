@@ -1,9 +1,9 @@
 
-export class ChatUserInfo {
+export class UserEntity {
 
   constructor(
     public username: string,
-    public isActive: boolean
+    public creationDate: string
   ) {}
 
 }

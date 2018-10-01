@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { ChatUserInfo } from '../../../model/chat';
+import { Component } from '@angular/core';
+import { UserEntity } from '../../../model/chat';
 import { SignalingService } from '../../../service/signaling/signaling.service';
 import { SessionService } from '../../../service/session/session.service';
 import { EventHandlerType } from '../../../utils/signaling';
@@ -13,8 +13,8 @@ import { MessageService } from '../../../service/interface/message.service';
 })
 export class ChatSidebarComponent {
 
-  public masterUser: ChatUserInfo;
-  public activeUsers: ChatUserInfo[] = [];
+  public masterUser: UserEntity;
+  public activeUsers: UserEntity[] = [];
 
   private onUserConnected: EventHandlerType;
   private onUserDisconnected: EventHandlerType;
@@ -31,17 +31,19 @@ export class ChatSidebarComponent {
 
   private async initUsers() {
     this.activeUsers = (await this.userService.getAllUsersAsync())
-      .map(username => new ChatUserInfo(username, true));
+      .filter((user) => user.username !== this.masterUser.username);
 
-    this.onUserConnected = (userName) => {
-      const userAlreadyExists = this.activeUsers.some((user) => user.username === userName);
+    this.onUserConnected = (newUser: UserEntity) => {
+      const userAlreadyExists =
+        this.activeUsers.some((user) => user.username === newUser.username);
       if (!userAlreadyExists) {
-        this.activeUsers = [...this.activeUsers, new ChatUserInfo(userName, true)];
+        this.activeUsers = [...this.activeUsers, newUser];
       }
     };
 
-    this.onUserDisconnected = (userName) => {
-      const usersWithoutDisconnected = this.activeUsers.filter((userInfo) => userInfo.username !== userName);
+    this.onUserDisconnected = (disconnectedUser: UserEntity) => {
+      const usersWithoutDisconnected =
+        this.activeUsers.filter((userInfo) => userInfo.username !== disconnectedUser.username);
       if (this.activeUsers.length !== usersWithoutDisconnected.length) {
         this.activeUsers = usersWithoutDisconnected;
       }
@@ -51,8 +53,8 @@ export class ChatSidebarComponent {
     this.signalingService.subscribe.OnUserDisconnected = this.onUserDisconnected;
   }
 
-  public selectUser(username: string) {
-    this.messageService.onSelectUser.emit(username);
+  public selectUser(user: UserEntity) {
+    this.messageService.onSelectUser.emit(user);
   }
 
 }
