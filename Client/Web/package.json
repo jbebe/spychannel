@@ -21,13 +21,13 @@
     "@angular/platform-browser-dynamic": "^6.1.0",
     "@angular/router": "^6.1.0",
     "@aspnet/signalr": "^1.0.3",
-    "@bajuh/webrtc-ts": "file:../WebRTCLib",
     "bootstrap-css-only": "^4.1.1",
     "core-js": "^2.5.4",
     "jquery": "^3.3.1",
     "ngx-store": "^2.0.0",
     "signalr": "^2.3.0",
-    "zone.js": "~0.8.26"
+    "zone.js": "~0.8.26",
+    "webrtc-adapter": "^6.4.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.8.0",
@@ -37,6 +37,7 @@
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",
+    "@types/webrtc": "^0.0.23",
     "codelyzer": "~4.3.0",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
