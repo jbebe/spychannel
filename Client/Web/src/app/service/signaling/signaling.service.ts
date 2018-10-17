@@ -1,62 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
 import { environment } from '../../../environments/environment';
-import { Assert } from '../../utils/assert';
 import { EventHandlerType } from '../../utils/signaling';
 import { UserEntity } from '../../model/chat';
-
-function RemoteCall() {
-  return (methodObj, methodName: string, descriptor: PropertyDescriptor) => {
-    Assert.True(methodName.endsWith('Async'));
-    const remoteMethodName = methodName.substr(0, methodName.length - 'Async'.length);
-    descriptor.value = async function (...args: any[]): Promise<any> {
-      return await this.connection.invoke(
-        remoteMethodName,
-        ...args.map((e) => {
-          if (typeof(e) === 'object') {
-            return JSON.stringify(e);
-          } else {
-            return e;
-          }
-        }));
-    };
-  };
-}
+import { RemoteAction, RemoteFunction } from './remote-call.decorator';
+import { SubscribeProxyHandler, UnsubscribeAllProxyHandler, UnsubscribeProxyHandler } from './subscribe.handlers';
 
 interface IEventHandlerList {
   [eventName: string]: EventHandlerType[];
-}
-
-class SubscribeProxyHandler implements ProxyHandler<SignalingService> {
-
-  set(target: SignalingService, propertyKey: string, eventHandler: EventHandlerType, receiver: any): boolean {
-    target.eventHandlers[propertyKey] = target.eventHandlers[propertyKey] || <EventHandlerType[]>[];
-    target.eventHandlers[propertyKey].push(eventHandler);
-    return true;
-  }
-}
-
-class UnsubscribeProxyHandler implements ProxyHandler<SignalingService> {
-
-  set(target: SignalingService, propertyKey: string, removableEventHandler: EventHandlerType, receiver: any): boolean {
-    if (!target.eventHandlers[propertyKey]) {
-      return false;
-    }
-    target.eventHandlers[propertyKey] = target.eventHandlers[propertyKey]
-      .filter((eventHandler) => eventHandler === eventHandler);
-    return true;
-  }
-}
-
-class UnsubscribeAllProxyHandler implements ProxyHandler<SignalingService> {
-
-  get(target: SignalingService, propertyKey: string, receiver: any): any {
-    if (!target.eventHandlers[propertyKey]) {
-      return;
-    }
-    target.eventHandlers[propertyKey] = [];
-  }
-
 }
 
 @Injectable({
@@ -82,8 +33,8 @@ export class SignalingService {
     return new Proxy(this, new UnsubscribeAllProxyHandler());
   }
 
-  constructor() {
-    this.InitSignalR();
+  constructor(onInitComplete?: () => void, onInitError?: (reason) => void) {
+    this.InitSignalR().then(onInitComplete, onInitError);
   }
 
   private async InitSignalR() {
@@ -104,7 +55,6 @@ export class SignalingService {
 
     // start signalR
     await this.connection.start();
-    // connection.invoke('Send', 'Angular', 'Hello')
   }
 
   public OnUserConnected(user: UserEntity) {
@@ -113,8 +63,13 @@ export class SignalingService {
   public OnUserDisconnected(user: UserEntity) {
   }
 
-  @RemoteCall()
+  @RemoteAction()
   public async RegisterAsync(user: UserEntity) {
+  }
+
+  @RemoteFunction()
+  // @ts-ignore
+  public async ExchangeSdpAsync(userId: string, sdpHeader: string): Promise<string> {
   }
 
 }

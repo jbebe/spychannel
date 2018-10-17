@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { MessageService } from '../../../service/interface/message.service';
 import { SessionService } from '../../../service/session/session.service';
 import { UserEntity } from '../../../model/chat';
-import { WebRTCHost, EventEmitter } from '@bajuh/webrtc-ts/dist';
+import { WebRtcService } from '../../../service/webrtc/web-rtc.service';
 
 @Component({
   selector: 'shared-chat-message-box',
@@ -11,31 +11,31 @@ import { WebRTCHost, EventEmitter } from '@bajuh/webrtc-ts/dist';
 })
 export class ChatMessageBoxComponent implements OnInit, AfterViewInit {
 
-  ngAfterViewInit(): void {
-    const host = new WebRTCHost();
-    host.connect((sdp) => {
-      console.log('send this sdp to remote...');
-    }, new EventEmitter<RTCSessionDescriptionInit>())
-  }
-
   public isActive = true;
 
   public messages: { from: string, text: string }[] = [];
 
   constructor(
     private sessionService: SessionService,
-    private uiMessageService: MessageService
+    private uiMessageService: MessageService,
+    private webRtcService: WebRtcService
   ) {
     uiMessageService.onSelectUser.subscribe(
-      (user: UserEntity) => this.onSelectUser(user));
+      async (user: UserEntity) => await this.onSelectUserAsync(user));
   }
 
   ngOnInit() {
   }
 
-  private onSelectUser(user: UserEntity) {
+  ngAfterViewInit(): void {
+
+  }
+
+  private async onSelectUserAsync(user: UserEntity) {
     this.isActive = true;
     this.messages = [];
+    await this.webRtcService.loadRoomAsync(user);
+
   }
 
   sendMessage($event: KeyboardEvent) {

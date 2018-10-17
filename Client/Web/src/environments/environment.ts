@@ -5,7 +5,10 @@
 export const environment = {
   production: false,
   chatApiEndpoint: 'https://localhost:44370/api',
-  signalServerEndpoint: 'http://localhost:60900/chat',
+  signalServer: {
+    endpointUrl: 'http://localhost:60900/chat',
+    timeoutMs: 10 * 1000 // 10 secs
+  },
 };
 
 /*
