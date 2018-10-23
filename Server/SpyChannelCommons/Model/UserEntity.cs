@@ -13,7 +13,11 @@ namespace SpyChannel.Commons
     [JsonProperty]
     public DateTime CreationDate { get; }
 
-    public UserEntity(string username, DateTime? creationDate = null)
+		[JsonProperty]
+		public string ConnectionId { get; set; }
+
+
+		public UserEntity(string username, DateTime? creationDate = null)
     {
       Username = username;
       CreationDate = creationDate ?? DateTime.UtcNow;
