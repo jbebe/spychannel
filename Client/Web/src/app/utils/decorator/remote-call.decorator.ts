@@ -1,6 +1,9 @@
-import { Assert } from '../../utils/assert';
+import { Assert } from '../assert';
 import { HubConnection } from '@aspnet/signalr';
 
+/**
+ * @description Async function!
+ */
 export function RemoteFunction() {
   return (methodObj, methodName: string, descriptor: PropertyDescriptor) => {
 

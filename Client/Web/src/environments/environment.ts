@@ -7,7 +7,7 @@ export const environment = {
   chatApiEndpoint: 'https://localhost:44370/api',
   signalServer: {
     endpointUrl: 'http://localhost:60900/chat',
-    timeoutMs: 10 * 1000 // 10 secs
+    timeoutMs: 100 * 1000 // 100 secs
   },
 };
 

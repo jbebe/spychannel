@@ -1,116 +1,95 @@
+import { DataChannelEventData } from '../../model/chat';
+import { DataChannelConfig } from './types';
 import { EventEmitter } from '@angular/core';
-import { environment } from '../../../environments/environment';
-
-export interface IRequestedMedia {
-  camera?: MediaStreamConstraints;
-  screen?: MediaStreamConstraints;
-}
-
-export type Action<T> = (_: T) => void;
-export type AsyncAction<T> = (_: T) => Promise<void>;
-
-export async function GetStreamAsync(request: IRequestedMedia): Promise<MediaStream> {
-  if (request.camera) {
-    return await navigator.mediaDevices.getUserMedia(request.camera);
-  }
-  if (request.screen) {
-    return await navigator.getDisplayMedia(request.screen);
-  }
-  throw new Error('Missing requested media type!');
-}
 
 export class WebRTCBase {
 
+  protected dataChannels: { [name: string]: RTCDataChannel } = {};
+  protected dataChannelMultiplexer: { [channelName: string]: EventEmitter<DataChannelEventData> } = {};
+  protected onLocalSdpCreated: EventEmitter<RTCSessionDescription> = new EventEmitter<RTCSessionDescription>();
+
+  public get rawConnection(): RTCPeerConnection { return this.connection; }
+
   constructor(
     protected connection: RTCPeerConnection,
+    dataChannels: DataChannelConfig[],
     protected stream?: MediaStream
   ) {
-    this.connection.onicecandidate = (e) =>
-      this.onIceCandidate(e);
-    this.connection.oniceconnectionstatechange = (e) =>
-      this.onIceConnectionStateChange(e);
+    if (stream) {
+      stream.getTracks().forEach(track => this.connection.addTrack(track, stream));
+    }
+    this.connection.onicecandidate = async (e) => await this.HandleNewIceCandidateAsync(e);
+    this.connection.oniceconnectionstatechange = (e) => this.onIceConnectionStateChange(e);
+    this.connection.ontrack = (e) => this.onStreamReady(e);
+    this.connection.onsignalingstatechange = (data) => console.info(data);
+
+    this.connection.ondatachannel = this.onDataChannel.bind(this);
+    this.initDataChannelMultiplexer(dataChannels);
   }
 
   protected onStreamReady(event: RTCTrackEvent) {
-    console.log(event);
+    console.info(event);
   }
 
-  protected onIceCandidate(e: RTCPeerConnectionIceEvent) {
+  protected async HandleNewIceCandidateAsync(e: RTCPeerConnectionIceEvent) {
     console.log(e);
+    if (e.candidate) {
+      if (this.connection.currentRemoteDescription) {
+        console.info('Add new ice candidate...');
+        await this.connection.addIceCandidate(e.candidate);
+      }
+    } else {
+      console.warn('Candidate search done!');
+      this.onLocalSdpCreated.emit(this.connection.localDescription);
+    }
   }
 
   protected onIceConnectionStateChange(e: Event) {
     console.log(e);
   }
 
-  public close() {
+  public send(channelName: string, message: string) {
+    if (!(channelName in this.dataChannels)) {
+      throw Error(`Channel name (${channelName}) not in available data channels!`);
+    }
+    this.dataChannels[channelName].send(message);
+  }
 
+  public close() {
     this.connection.close();
   }
-}
 
-export class WebRTCGuest extends WebRTCBase {
-
-  constructor(stream?: MediaStream, config?: RTCConfiguration) {
-    super(new RTCPeerConnection(config));
-
-    if (stream) {
-      stream.getTracks()
-        .forEach(track => this.connection.addTrack(track, stream));
-    }
-    this.connection.ontrack = (e) => this.onStreamReady(e);
-  }
-
-  // public methods
-
-  public async receive(
-    sendOfferToRemote: Action<RTCSessionDescriptionInit>,
-    remoteSDP: RTCSessionDescriptionInit,
-    options?: RTCAnswerOptions
-  ) {
-    await this.connection.setRemoteDescription(remoteSDP);
-    const localSDP = await this.connection.createAnswer(options);
-    sendOfferToRemote(localSDP);
-  }
-}
-
-export class WebRTCHost extends WebRTCBase {
-
-  constructor(stream?: MediaStream, config?: RTCConfiguration) {
-    super(new RTCPeerConnection(config));
-    if (stream) {
-      stream.getTracks()
-        .forEach(track => this.connection.addTrack(track, stream));
-    }
-    this.connection.ontrack = (e) => this.onStreamReady(e);
-  }
-
-  // public methods
-
-  public async connectAsync(
-    sendOfferToRemote: AsyncAction<RTCSessionDescriptionInit>,
-    receiveOfferFromRemote: EventEmitter<RTCSessionDescriptionInit>,
-    offer?: RTCOfferOptions
-  ) {
-    return new Promise(async (resolve, reject) => {
-
-      const rejectTimeout = setTimeout(() => reject(), environment.signalServer.timeoutMs);
-
-      const sdpObject = await this.connection.createOffer(offer);
-      await this.connection.setLocalDescription(sdpObject);
-      await sendOfferToRemote(sdpObject);
-      receiveOfferFromRemote.subscribe(async (remoteSdp) => {
-        await this.onReceiveRemoteOfferAsync(remoteSdp);
-        clearTimeout(rejectTimeout);
-        resolve();
-      });
+  private initDataChannelMultiplexer(dataChannels: DataChannelConfig[]) {
+    dataChannels.forEach((config) => {
+      this.dataChannelMultiplexer[config.name] = config.onMessage;
     });
   }
 
-  // events
-
-  private async onReceiveRemoteOfferAsync(sdp: RTCSessionDescriptionInit) {
-    await this.connection.setRemoteDescription(sdp);
+  private onDataChannel(dataChannelEvent: RTCDataChannelEvent) {
+    console.log(dataChannelEvent);
+    const channel = dataChannelEvent.channel;
+    const channelName = channel.label;
+    if (channelName in this.dataChannels) {
+      throw new Error(`Channel name (${channelName}) is already defined in the channels table!`);
+    } else {
+      this.dataChannels[channelName] = channel;
+    }
+    channel.onerror = (error) => {
+      console.log(`Data Channel (${channelName}) Error:`, error);
+    };
+    channel.onmessage = (event) => {
+      console.log(`Data Channel (${channelName}) Message:`, event.data);
+      this.dataChannelMultiplexer[channelName].emit(new DataChannelEventData(event.data, channelName));
+    };
+    channel.onopen = (event) => {
+      const state = channel.readyState;
+      if (state === 'open') {
+        console.warn('data channel opened!');
+      }
+      console.log(`Data Channel (${channelName}) Open!`);
+    };
+    channel.onclose = () => {
+      console.log(`Data Channel (${channelName}) is Closed`);
+    };
   }
-
 }

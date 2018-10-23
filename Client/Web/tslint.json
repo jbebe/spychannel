@@ -7,8 +7,7 @@
     "callable-types": true,
     "class-name": true,
     "comment-format": [
-      true,
-      "check-space"
+      false
     ],
     "curly": true,
     "deprecation": {
@@ -46,7 +45,7 @@
     "no-arg": true,
     "no-bitwise": true,
     "no-console": [
-      true,
+      false,
       "debug",
       "info",
       "time",

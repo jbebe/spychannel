@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
 import { environment } from '../../../environments/environment';
 import { EventHandlerType } from '../../utils/signaling';
 import { UserEntity } from '../../model/chat';
-import { RemoteAction, RemoteFunction } from './remote-call.decorator';
+import { RemoteAction, RemoteFunction } from '../../utils/decorator/remote-call.decorator';
 import { SubscribeProxyHandler, UnsubscribeAllProxyHandler, UnsubscribeProxyHandler } from './subscribe.handlers';
 
 interface IEventHandlerList {
@@ -15,9 +15,16 @@ interface IEventHandlerList {
 })
 export class SignalingService {
 
+  // static callbacks (can't put in constructor because DI)
+
+  public static OnInitComplete: EventEmitter<void> = new EventEmitter<void>();
+  public static OnInitError: EventEmitter<any> = new EventEmitter<any>();
+
   private static readonly EventPrefix = 'On';
 
   private connection: HubConnection;
+
+  // event handling
 
   public eventHandlers: IEventHandlerList = {};
 
@@ -33,13 +40,18 @@ export class SignalingService {
     return new Proxy(this, new UnsubscribeAllProxyHandler());
   }
 
-  constructor(onInitComplete?: () => void, onInitError?: (reason) => void) {
-    this.InitSignalR().then(onInitComplete, onInitError);
+  // actual service logic
+
+  constructor() {
+    this.InitSignalR()
+      .then(() => SignalingService.OnInitComplete.emit(),
+        (reason) => SignalingService.OnInitError.emit(reason))
+      .catch((reason) => SignalingService.OnInitError.emit(reason));
   }
 
   private async InitSignalR() {
     this.connection = new HubConnectionBuilder()
-      .withUrl(environment.signalServerEndpoint)
+      .withUrl(environment.signalServer.endpointUrl)
       .build();
 
     // init events
@@ -57,19 +69,44 @@ export class SignalingService {
     await this.connection.start();
   }
 
+  // events to register on
+
   public OnUserConnected(user: UserEntity) {
   }
 
   public OnUserDisconnected(user: UserEntity) {
   }
 
+  public OnRequestSdpExchange(hostId: string, hostSdpHeader: string) {
+  }
+
+  public OnRespondToSdpExchange(guestId: string, guestSdpHeader: RTCSessionDescriptionInit) {
+  }
+
+  // remote calls
+
   @RemoteAction()
   public async RegisterAsync(user: UserEntity) {
   }
 
-  @RemoteFunction()
+  /**
+   * @description Calls the server, the server calls the guest.
+   * @param guestId The id where the message is directed at
+   * @param hostSdpHeader The host's sdp header
+   */
+  @RemoteAction()
   // @ts-ignore
-  public async ExchangeSdpAsync(userId: string, sdpHeader: string): Promise<string> {
+  public async RequestSdpExchangeAsync(guestId: string, hostSdpHeader: RTCSessionDescriptionInit) {
+  }
+
+  /**
+   * @description Calls the server, the server calls the host.
+   * After that, the WebRTC connection will be eventually alive.
+   * @param hostId The id where the message is directed at
+   * @param guestSdpHeader The guest's sdp answer
+   */
+  @RemoteAction()
+  public async RespondToSdpExchangeAsync(hostId: string, guestSdpHeader: RTCSessionDescriptionInit) {
   }
 
 }

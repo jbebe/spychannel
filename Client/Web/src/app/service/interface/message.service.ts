@@ -5,6 +5,7 @@ import { UserEntity } from '../../model/chat';
 export class MessageService {
 
   public onSelectUser: EventEmitter<UserEntity> = new EventEmitter<UserEntity>();
+  public onNewMessage: EventEmitter<string> = new EventEmitter<string>();
 
   constructor() { }
 }

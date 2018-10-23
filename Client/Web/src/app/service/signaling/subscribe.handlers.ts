@@ -13,11 +13,11 @@ export class SubscribeProxyHandler implements ProxyHandler<SignalingService> {
 export class UnsubscribeProxyHandler implements ProxyHandler<SignalingService> {
 
   set(target: SignalingService, propertyKey: string, removableEventHandler: EventHandlerType, receiver: any): boolean {
-    if (!target.eventHandlers[propertyKey]) {
+    if (!(propertyKey in target.eventHandlers)) {
       return false;
     }
-    target.eventHandlers[propertyKey] = target.eventHandlers[propertyKey]
-      .filter((eventHandler) => eventHandler === eventHandler);
+    target.eventHandlers[propertyKey] = target.eventHandlers[propertyKey].filter(
+        (eventHandler) => eventHandler !== eventHandler);
     return true;
   }
 }
@@ -25,9 +25,9 @@ export class UnsubscribeProxyHandler implements ProxyHandler<SignalingService> {
 export class UnsubscribeAllProxyHandler implements ProxyHandler<SignalingService> {
 
   get(target: SignalingService, propertyKey: string, receiver: any): any {
-    if (!target.eventHandlers[propertyKey]) {
-      return;
+    if (propertyKey in target.eventHandlers) {
+      target.eventHandlers[propertyKey] = [];
     }
-    target.eventHandlers[propertyKey] = [];
+    return undefined;
   }
 }

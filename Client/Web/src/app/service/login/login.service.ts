@@ -11,7 +11,7 @@ export class LoginService {
     private sessionService: SessionService
   ) { }
 
-  async login(loginInfo: LoginInfo): Promise<LoginFailure | null> {
+  async loginAsync(loginInfo: LoginInfo): Promise<LoginFailure | null> {
     if (!!loginInfo.name) {
       await this.sessionService.create(loginInfo);
       await this.router.navigate(['chat']);
@@ -22,3 +22,4 @@ export class LoginService {
   }
 
 }
+

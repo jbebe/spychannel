@@ -8,7 +8,7 @@ import { GlobalService } from '../../../service/global/global.service';
 })
 export class MessageComponent implements OnInit {
 
-  public isVisible = true;
+  public isVisible = false;
 
   constructor(
     public globalService: GlobalService

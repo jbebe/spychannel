@@ -16,7 +16,7 @@
         </div>
         <input type="text" class="form-control" placeholder="Username" aria-label="Username"
                aria-describedby="basic-addon1" tabindex="1" required autofocus
-               #usernameInput (keydown.enter)="tryEnter(usernameInput)">
+               #usernameInput (keydown.enter)="tryEnterAsync(usernameInput.value)">
       </div>
     </div>
     <!--<div class="modal-footer">

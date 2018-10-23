@@ -7,7 +7,9 @@
     Active users:
     <ul class="nav flex-sm-column justify-content-center">
       <b (click)="selectUser(activeUser)" class="nav-link" *ngFor="let activeUser of activeUsers">
-        {{ activeUser.username }}
+        <span *ngIf="selectedUser && selectedUser.entity.id === activeUser.entity.id">&gt;</span>
+        {{ activeUser.entity.username }}
+        <span *ngIf="activeUser.newMessageCount > 0">({{ activeUser.newMessageCount }})</span>
       </b>
     </ul>
   </div>

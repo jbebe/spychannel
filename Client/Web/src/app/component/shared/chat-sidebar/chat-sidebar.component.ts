@@ -1,10 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { UserEntity } from '../../../model/chat';
 import { SignalingService } from '../../../service/signaling/signaling.service';
 import { SessionService } from '../../../service/session/session.service';
 import { EventHandlerType } from '../../../utils/signaling';
 import { UserService } from '../../../service/user/user.service';
 import { MessageService } from '../../../service/interface/message.service';
+
+class SidebarUserEntity {
+
+  constructor(
+    public entity: UserEntity,
+    public newMessageCount: number
+  ) {
+  }
+}
 
 @Component({
   selector: 'shared-chat-sidebar',
@@ -13,48 +22,72 @@ import { MessageService } from '../../../service/interface/message.service';
 })
 export class ChatSidebarComponent {
 
-  public masterUser: UserEntity;
-  public activeUsers: UserEntity[] = [];
+  public get masterUser(): UserEntity {
+    return this.sessionService.currentUser;
+  }
 
-  private onUserConnected: EventHandlerType;
-  private onUserDisconnected: EventHandlerType;
+  public activeUsers: SidebarUserEntity[] = [];
+  public selectedUser: SidebarUserEntity | null;
 
   constructor(
     private sessionService: SessionService,
     private signalingService: SignalingService,
     private userService: UserService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private zone: NgZone
   ) {
-    this.masterUser = sessionService.currentUser;
     this.initUsers();
+    this.messageService.onNewMessage.subscribe((userId: string) => {
+      if (this.masterUser.id === userId || this.selectedUser.entity.id === userId) {
+        return;
+      }
+      this.zone.run(() => {
+        const sidebarUser = this.activeUsers.find((sidebarUserEntity) => sidebarUserEntity.entity.id === userId);
+        sidebarUser.newMessageCount += 1;
+      });
+    });
   }
 
   private async initUsers() {
-    this.activeUsers = (await this.userService.getAllUsersAsync())
-      .filter((user) => user.username !== this.masterUser.username);
+    this.activeUsers = await this.getActiveUsersAsync();
 
-    this.onUserConnected = (newUser: UserEntity) => {
-      const userAlreadyExists =
-        this.activeUsers.some((user) => user.username === newUser.username);
-      if (!userAlreadyExists) {
-        this.activeUsers = [...this.activeUsers, newUser];
-      }
-    };
-
-    this.onUserDisconnected = (disconnectedUser: UserEntity) => {
-      const usersWithoutDisconnected =
-        this.activeUsers.filter((userInfo) => userInfo.username !== disconnectedUser.username);
-      if (this.activeUsers.length !== usersWithoutDisconnected.length) {
-        this.activeUsers = usersWithoutDisconnected;
-      }
-    };
-
-    this.signalingService.subscribe.OnUserConnected = this.onUserConnected;
-    this.signalingService.subscribe.OnUserDisconnected = this.onUserDisconnected;
+    this.signalingService.subscribe.OnUserConnected = this.addNewUser.bind(this);
+    this.signalingService.subscribe.OnUserDisconnected = this.removeUser.bind(this);
   }
 
-  public selectUser(user: UserEntity) {
-    this.messageService.onSelectUser.emit(user);
+  public selectUser(user: SidebarUserEntity) {
+    this.selectedUser = user;
+    user.newMessageCount = 0;
+    this.messageService.onSelectUser.emit(user.entity);
+  }
+
+  public async addNewUser(newUser: UserEntity) {
+    const userAlreadyExists =
+      this.activeUsers.some((userEntity) => userEntity.entity.username === newUser.username);
+    if (!userAlreadyExists) {
+      const userEntity = new SidebarUserEntity(UserEntity.Cast(newUser), 0);
+      this.activeUsers = [...this.activeUsers, userEntity];
+    }
+  }
+
+  public async removeUser(disconnectedUser: UserEntity) {
+    const usersWithoutDisconnected =
+      this.activeUsers.filter((userEntity: SidebarUserEntity) => userEntity.entity.username !== disconnectedUser.username);
+    if (this.activeUsers.length !== usersWithoutDisconnected.length) {
+      this.activeUsers = usersWithoutDisconnected;
+    }
+  }
+
+  public async getActiveUsersAsync() {
+    return (await this.userService.getAllUsersAsync())
+      .filter((user) => user.username !== this.masterUser.username)
+      .map(UserEntity.Cast)
+      .map((userEntity) => {
+        return {
+          entity: userEntity,
+          newMessageCount: 0
+        };
+      });
   }
 
 }
