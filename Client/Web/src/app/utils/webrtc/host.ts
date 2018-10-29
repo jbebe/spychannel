@@ -7,11 +7,15 @@ import { DataChannelEventData } from '../../model/chat';
 
 export class WebRTCHost extends WebRTCBase {
 
-  constructor(stream?: MediaStream, dataChannels: DataChannelConfig[] = [], config?: RTCConfiguration) {
-    super(new RTCPeerConnection(config), dataChannels);
+  constructor(
+    stream?: MediaStream,
+    dataChannelConfigs: DataChannelConfig[] = [],
+    config?: RTCConfiguration
+  ) {
+    super(new RTCPeerConnection(config), dataChannelConfigs);
     // init data channel for host
     // that means we only create it, we won't receive the channels one by one
-    this.createDataChannels(dataChannels);
+    this.createDataChannels(dataChannelConfigs);
   }
 
   // public methods
@@ -21,6 +25,17 @@ export class WebRTCHost extends WebRTCBase {
     receiveOfferFromRemote: EventEmitter<RTCSessionDescriptionInit>,
     offerOptions?: RTCOfferOptions
   ) {
+    await Promise.all([
+      this.setUpConnectionAsync(sendOfferToRemoteAsync, receiveOfferFromRemote, offerOptions),
+      this.waitForOpenDataChannelsAsync()
+    ]);
+  }
+
+  private setUpConnectionAsync(
+    sendOfferToRemoteAsync: AsyncAction<RTCSessionDescriptionInit>,
+    receiveOfferFromRemote: EventEmitter<RTCSessionDescriptionInit>,
+    offerOptions?: RTCOfferOptions
+  ): Promise<void> {
     return new Promise(async (resolve, reject) => {
 
       const rejectTimeout = setTimeout(() => {
@@ -47,8 +62,8 @@ export class WebRTCHost extends WebRTCBase {
     });
   }
 
-  private createDataChannels(dataChannels: DataChannelConfig[]) {
-    dataChannels.forEach((config) => {
+  private createDataChannels(dataChannelConfigs: DataChannelConfig[]) {
+    dataChannelConfigs.forEach((config) => {
       const dataChannel = this.connection.createDataChannel(config.name, config.options);
       this.dataChannels[config.name] = dataChannel;
       dataChannel.onerror = (error) => {
@@ -58,12 +73,13 @@ export class WebRTCHost extends WebRTCBase {
         console.log(`Data Channel (${config.name}) Message:`, event.data);
         this.dataChannelMultiplexer[config.name].emit(new DataChannelEventData(event.data, config.name));
       };
-      dataChannel.onopen = (event) => {
+      dataChannel.onopen = (event: Event) => {
         const state = dataChannel.readyState;
         if (state === 'open') {
           console.warn('data channel opened!');
         }
         console.log(`Data Channel (${config.name}) Open!`);
+        config.onOpen.emit(event);
       };
       dataChannel.onclose = () => {
         console.log(`Data Channel (${config.name}) is Closed`);

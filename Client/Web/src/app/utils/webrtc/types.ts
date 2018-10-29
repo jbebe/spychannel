@@ -6,6 +6,7 @@ export class DataChannelConfig {
   constructor(
     public name: string,
     public onMessage: EventEmitter<DataChannelEventData>,
+    public onOpen: EventEmitter<Event> = new EventEmitter<Event>(),
     public options?: RTCDataChannelInit
   ) {
   }

@@ -6,13 +6,14 @@ export class WebRTCBase {
 
   protected dataChannels: { [name: string]: RTCDataChannel } = {};
   protected dataChannelMultiplexer: { [channelName: string]: EventEmitter<DataChannelEventData> } = {};
+
   protected onLocalSdpCreated: EventEmitter<RTCSessionDescription> = new EventEmitter<RTCSessionDescription>();
 
   public get rawConnection(): RTCPeerConnection { return this.connection; }
 
   constructor(
     protected connection: RTCPeerConnection,
-    dataChannels: DataChannelConfig[],
+    protected dataChannelConfigs: DataChannelConfig[],
     protected stream?: MediaStream
   ) {
     if (stream) {
@@ -24,7 +25,7 @@ export class WebRTCBase {
     this.connection.onsignalingstatechange = (data) => console.info(data);
 
     this.connection.ondatachannel = this.onDataChannel.bind(this);
-    this.initDataChannelMultiplexer(dataChannels);
+    this.initDataChannelMultiplexer(dataChannelConfigs);
   }
 
   protected onStreamReady(event: RTCTrackEvent) {
@@ -59,8 +60,8 @@ export class WebRTCBase {
     this.connection.close();
   }
 
-  private initDataChannelMultiplexer(dataChannels: DataChannelConfig[]) {
-    dataChannels.forEach((config) => {
+  private initDataChannelMultiplexer(dataChannelConfigs: DataChannelConfig[]) {
+    dataChannelConfigs.forEach((config) => {
       this.dataChannelMultiplexer[config.name] = config.onMessage;
     });
   }
@@ -79,7 +80,8 @@ export class WebRTCBase {
     };
     channel.onmessage = (event) => {
       console.log(`Data Channel (${channelName}) Message:`, event.data);
-      this.dataChannelMultiplexer[channelName].emit(new DataChannelEventData(event.data, channelName));
+      this.dataChannelMultiplexer[channelName].emit(
+        new DataChannelEventData(event.data, channelName));
     };
     channel.onopen = (event) => {
       const state = channel.readyState;
@@ -87,9 +89,21 @@ export class WebRTCBase {
         console.warn('data channel opened!');
       }
       console.log(`Data Channel (${channelName}) Open!`);
+      const channelConfig = this.dataChannelConfigs.find((config) => config.name === channelName);
+      channelConfig.onOpen.emit(event);
     };
     channel.onclose = () => {
       console.log(`Data Channel (${channelName}) is Closed`);
     };
+  }
+
+  protected async waitForOpenDataChannelsAsync(): Promise<void> {
+    await Promise.all(this.dataChannelConfigs.map(
+      (config) => new Promise(((resolve, reject) => {
+        config.onOpen.subscribe((event) => {
+          resolve();
+        });
+      }))
+    ));
   }
 }

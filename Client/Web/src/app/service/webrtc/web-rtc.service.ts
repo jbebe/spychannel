@@ -3,13 +3,12 @@ import { SignalingService } from '../signaling/signaling.service';
 import { WebRtcChatRoom } from './web-rtc.chat-room';
 import { ChatMessage, ChatMessageData, DataChannelEventData } from '../../model/chat';
 import { SessionService } from '../session/session.service';
+import { WebRtcConstant } from '../../utils/webrtc/constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebRtcService {
-
-  public static readonly MessageChannelName = 'message';
 
   private rooms: { [userId: string]: WebRtcChatRoom } = {};
   private currentRoomKey: string | null = null;
@@ -46,7 +45,7 @@ export class WebRtcService {
       room.onRoomMessage.subscribe((messageEventData: DataChannelEventData) => {
         this.onChatMessage.emit(new ChatMessageData(remoteUserId, messageEventData.message, messageEventData.channelName));
       });
-      await room.initHostAsync([ WebRtcService.MessageChannelName ]);
+      await room.initHostAsync([ WebRtcConstant.MessageChannelName ]);
       this.rooms[remoteUserId] = room;
     }
 
@@ -58,7 +57,7 @@ export class WebRtcService {
     if (!this.currentRoomKey) {
       throw Error('Cannot send message if no room is active!');
     }
-    const messageData = new ChatMessageData(this.sessionService.currentUser.id, message, WebRtcService.MessageChannelName);
+    const messageData = new ChatMessageData(this.sessionService.currentUser.id, message, WebRtcConstant.MessageChannelName);
     this.rooms[this.currentRoomKey].sendMessage(messageData);
     this.onChatMessage.emit(messageData);
   }
@@ -71,7 +70,7 @@ export class WebRtcService {
         this.onChatMessage.emit(new ChatMessageData(hostId, messageEventData.message, messageEventData.channelName));
       });
       const hostSdpHeader = <RTCSessionDescriptionInit>JSON.parse(hostSdpHeaderStr);
-      await room.initGuestAsync(hostSdpHeader, [ WebRtcService.MessageChannelName ]);
+      await room.initGuestAsync(hostSdpHeader, WebRtcConstant.Channels);
 
       this.rooms[hostId] = room;
     } else {

@@ -5,6 +5,7 @@ import { WebRTCHost } from '../../utils/webrtc/host';
 import { WebRTCGuest } from '../../utils/webrtc/guest';
 import { DataChannelConfig } from '../../utils/webrtc/types';
 import { GetStreamAsync } from '../../utils/webrtc/helpers';
+import { WebRtcConstant } from '../../utils/webrtc/constants';
 
 export class WebRtcChatRoom {
 
@@ -59,7 +60,7 @@ export class WebRtcChatRoom {
     // try to connect to guest
     console.info(`Connect to remote client...`);
     await (<WebRTCHost>this.connection).connectAsync(sendOfferToRemoteAsync, onReceiveOfferFromRemote);
-
+    this.sendMessage(new ChatMessageData('host', 'connected!', WebRtcConstant.MessageChannelName));
   }
 
   public async initGuestAsync(hostSdpHeader: RTCSessionDescriptionInit, dataChannelNames: string[]) {
@@ -82,7 +83,7 @@ export class WebRtcChatRoom {
     // try to connect to host
     console.info(`Connect to remote client...`);
     await (<WebRTCGuest>this.connection).connectAsync(sendOfferToRemote, hostSdpHeader);
-
+    this.sendMessage(new ChatMessageData('guest', 'connected!', WebRtcConstant.MessageChannelName));
   }
 
   public async loadAsync() {

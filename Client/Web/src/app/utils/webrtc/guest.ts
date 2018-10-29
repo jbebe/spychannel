@@ -1,14 +1,15 @@
 import { WebRTCBase } from './base';
 import { AsyncAction } from '../types';
 import { DataChannelConfig } from './types';
+import { EventEmitter } from '@angular/core';
 
 export class WebRTCGuest extends WebRTCBase {
 
   constructor(
     stream?: MediaStream,
-    dataChannels: DataChannelConfig[] = [],
+    dataChannelConfigs: DataChannelConfig[] = [],
     config?: RTCConfiguration) {
-    super(new RTCPeerConnection(config), dataChannels);
+    super(new RTCPeerConnection(config), dataChannelConfigs);
   }
 
   // public methods
@@ -18,6 +19,17 @@ export class WebRTCGuest extends WebRTCBase {
     remoteSDP: RTCSessionDescriptionInit,
     answerOptions?: RTCAnswerOptions
   ) {
+    await Promise.all([
+      this.setUpConnectionAsync(sendOfferToRemoteAsync, remoteSDP, answerOptions),
+      this.waitForOpenDataChannelsAsync()
+    ]);
+  }
+
+  private async setUpConnectionAsync(
+    sendOfferToRemoteAsync: AsyncAction<RTCSessionDescriptionInit>,
+    remoteSDP: RTCSessionDescriptionInit,
+    answerOptions?: RTCAnswerOptions
+  ): Promise<void> {
     await this.connection.setRemoteDescription(remoteSDP);
     console.info(`Creating own (guest) SDP.`);
     const localSDP = await this.connection.createAnswer(answerOptions);

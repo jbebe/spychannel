@@ -38,7 +38,7 @@ export class ChatSidebarComponent {
   ) {
     this.initUsers();
     this.messageService.onNewMessage.subscribe((userId: string) => {
-      if (this.masterUser.id === userId || this.selectedUser.entity.id === userId) {
+      if (this.masterUser.id === userId || (this.selectedUser && this.selectedUser.entity.id === userId)) {
         return;
       }
       this.zone.run(() => {
