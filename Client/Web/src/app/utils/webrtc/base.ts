@@ -100,6 +100,7 @@ export class WebRTCBase {
   protected async waitForOpenDataChannelsAsync(): Promise<void> {
     await Promise.all(this.dataChannelConfigs.map(
       (config) => new Promise(((resolve, reject) => {
+        // TODO: missing timeout reject()
         config.onOpen.subscribe((event) => {
           resolve();
         });
