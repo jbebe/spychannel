@@ -4,7 +4,7 @@ import { SignalingService } from '../../../service/signaling/signaling.service';
 import { SessionService } from '../../../service/session/session.service';
 import { EventHandlerType } from '../../../utils/signaling';
 import { UserService } from '../../../service/user/user.service';
-import { MessageService } from '../../../service/interface/message.service';
+import { UserInterfaceService } from '../../../service/interface/user-interface.service';
 
 class SidebarUserEntity {
 
@@ -33,7 +33,7 @@ export class ChatSidebarComponent {
     private sessionService: SessionService,
     private signalingService: SignalingService,
     private userService: UserService,
-    private messageService: MessageService,
+    private messageService: UserInterfaceService,
     private zone: NgZone
   ) {
     this.initUsers();

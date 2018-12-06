@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
-import { MessageService } from '../../../service/interface/message.service';
+import { UserInterfaceService } from '../../../service/interface/user-interface.service';
 import { SessionService } from '../../../service/session/session.service';
 import { ChatMessage, ChatMessageData, UserEntity } from '../../../model/chat';
 import { WebRtcService } from '../../../service/webrtc/web-rtc.service';
@@ -17,7 +17,7 @@ export class ChatMessageBoxComponent {
 
   constructor(
     private sessionService: SessionService,
-    private uiMessageService: MessageService,
+    private uiMessageService: UserInterfaceService,
     private webRtcService: WebRtcService,
     private zone: NgZone
   ) {

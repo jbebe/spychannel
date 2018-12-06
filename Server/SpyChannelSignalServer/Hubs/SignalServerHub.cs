@@ -62,7 +62,7 @@ namespace SpyChannel.SignalServer.Hubs
 		}
 
 		[HubMethodName("RespondToSdpExchange")]
-		public async Task RespondToSdpExchange(string hostId, string guestSdpHeader)
+		public async Task RespondToSdpExchangeAsync(string hostId, string guestSdpHeader)
 		{
 			// find host
 			var hostEntity = await UserCache.GetAsync<UserEntity>(hostId);

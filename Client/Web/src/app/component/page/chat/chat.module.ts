@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ChatSidebarComponent } from '../../shared/chat-sidebar/chat-sidebar.component';
 import { ChatMessageBoxComponent } from '../../shared/chat-message-box/chat-message-box.component';
 import { UserService } from '../../../service/user/user.service';
-import { MessageService } from '../../../service/interface/message.service';
+import { UserInterfaceService } from '../../../service/interface/user-interface.service';
 
 @NgModule({
   imports: [
@@ -19,7 +19,7 @@ import { MessageService } from '../../../service/interface/message.service';
   ],
   providers: [
     UserService,
-    MessageService
+    UserInterfaceService
   ]
 })
 export class ChatModule {

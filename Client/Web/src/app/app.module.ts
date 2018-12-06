@@ -8,7 +8,7 @@ import { WebStorageModule } from 'ngx-store';
 import { ApiService } from './service/api/api';
 import { HttpClientModule } from '@angular/common/http';
 import { SessionService } from './service/session/session.service';
-import { MessageComponent } from './component/page/message/message.component';
+import { MessageComponent } from './component/shared/message/message.component';
 import { SignalingService } from './service/signaling/signaling.service';
 
 @NgModule({
