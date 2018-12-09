@@ -1,16 +1,21 @@
-<div *ngIf="isActive" class="card mb-3 p-2">
+<div *ngIf="isActive" class="card mb-3 p-2 message-box">
 
-  <div class="">
+  <div class="panel-message">
 
-    <video #localVideo></video>
-    <video #remoteVideo></video>
+    <div class="side-messages">
+      <p *ngFor="let message of messages">
+        <b>{{ message.from }}</b>: {{ message.message }}
+      </p>
+    </div>
 
-    <p *ngFor="let message of messages">
-      <b>{{ message.from }}</b>: {{ message.message }}
-    </p>
+    <div class="side-video">
+      <app-stream-window *ngIf="webRtcService.localVideo" [srcObject]="webRtcService.localVideo"></app-stream-window>
+      <app-stream-window *ngFor="let remoteVideo of webRtcService.remoteVideos" [srcObject]="remoteVideo"></app-stream-window>
+    </div>
+
   </div>
 
-  <div class="form-group">
+  <div class="form-group panel-input">
     <label for="chat-message-box-textarea">Write something!</label>
     <textarea class="form-control" id="chat-message-box-textarea" rows="3"
               (keydown.enter)="sendMessage($event)"></textarea>

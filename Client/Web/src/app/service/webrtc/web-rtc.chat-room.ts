@@ -99,9 +99,14 @@ export class WebRtcChatRoom {
     this.connection.send(chatMessageData.channelName, chatMessageData.message);
   }
 
-  private static async GetMediaStreamAsync() {
+  public static async GetMediaStreamAsync(): Promise<MediaStream> {
     return await GetStreamAsync({
-      camera: { audio: false, video: true }
+      camera: {
+        video: {
+          width: 320,
+          height: 240,
+        }
+      }
     });
   }
 }

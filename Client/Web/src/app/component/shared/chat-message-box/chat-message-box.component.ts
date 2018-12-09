@@ -1,8 +1,9 @@
-import { AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { UserInterfaceService } from '../../../service/interface/user-interface.service';
 import { SessionService } from '../../../service/session/session.service';
 import { ChatMessage, ChatMessageData, UserEntity } from '../../../model/chat';
 import { WebRtcService } from '../../../service/webrtc/web-rtc.service';
+import { WebRtcChatRoom } from '../../../service/webrtc/web-rtc.chat-room';
 
 @Component({
   selector: 'shared-chat-message-box',
@@ -12,21 +13,20 @@ import { WebRtcService } from '../../../service/webrtc/web-rtc.service';
 export class ChatMessageBoxComponent {
 
   public isActive = false;
-
   public messages: ChatMessage[];
 
   constructor(
     private sessionService: SessionService,
-    private uiMessageService: UserInterfaceService,
-    private webRtcService: WebRtcService,
+    private uiService: UserInterfaceService,
+    public webRtcService: WebRtcService,
     private zone: NgZone
   ) {
-    uiMessageService.onSelectUser.subscribe(
+    uiService.onSelectUser.subscribe(
       async (user: UserEntity) => await this.onSelectUserAsync(user));
 
     this.webRtcService.onChatMessage.subscribe(async (eventData: ChatMessageData) => {
       this.onMessage(eventData);
-      this.uiMessageService.onNewMessage.emit(eventData.from);
+      this.uiService.onNewMessage.emit(eventData.from);
     });
   }
 

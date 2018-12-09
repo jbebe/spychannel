@@ -1,0 +1,28 @@
+.message-box {
+  display: flex;
+  flex-flow: column;
+}
+
+.panel-message {
+  flex: 1;
+  display: flex;
+  flex-flow: row;
+}
+
+.panel-input {
+  height: 100px;
+}
+
+.side-video {
+  width: 320px;
+}
+
+.side-video > video {
+  width: 100%;
+  box-shadow: inset 0 0 1px #000;
+}
+
+.side-messages {
+  flex: 1;
+  vertical-align: bottom;
+}

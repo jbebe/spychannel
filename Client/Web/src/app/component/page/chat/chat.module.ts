@@ -6,20 +6,22 @@ import { ChatSidebarComponent } from '../../shared/chat-sidebar/chat-sidebar.com
 import { ChatMessageBoxComponent } from '../../shared/chat-message-box/chat-message-box.component';
 import { UserService } from '../../../service/user/user.service';
 import { UserInterfaceService } from '../../../service/interface/user-interface.service';
+import { StreamWindowComponent } from '../../shared/stream-window/stream-window.component';
 
 @NgModule({
   imports: [
     CommonModule,
-    ChatRoutingModule
+    ChatRoutingModule,
   ],
   declarations: [
     ChatPageComponent,
     ChatSidebarComponent,
-    ChatMessageBoxComponent
+    ChatMessageBoxComponent,
+    StreamWindowComponent,
   ],
   providers: [
     UserService,
-    UserInterfaceService
+    UserInterfaceService,
   ]
 })
 export class ChatModule {

@@ -15,6 +15,9 @@ export class WebRtcService {
   public onChatMessage: EventEmitter<ChatMessageData> = new EventEmitter<ChatMessageData>();
   public messages: ChatMessage[] = [];
 
+  public localVideo: MediaStream;
+  public remoteVideos: MediaStream[] = [];
+
   public get currentRoom(): WebRtcChatRoom {
     return this.rooms[this.currentRoomKey];
   }
@@ -26,6 +29,15 @@ export class WebRtcService {
 
     // register guest room load
     this.signalingService.subscribe.OnRequestSdpExchange = this.onRequestSdpExchange.bind(this);
+
+    // init stream window
+    (async () => {
+      const localVideoStream = await WebRtcChatRoom.GetMediaStreamAsync();
+      this.localVideo = localVideoStream;
+      this.remoteVideos = [
+        localVideoStream
+      ];
+    })();
   }
 
   public async loadRoomAsync(remoteUserId: string) {
